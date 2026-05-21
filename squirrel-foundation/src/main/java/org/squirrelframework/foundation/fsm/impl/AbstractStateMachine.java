@@ -381,9 +381,20 @@ public abstract class AbstractStateMachine<T extends StateMachine<T, S, E, C>, S
                 return false;
             }
         }
-        return testRawState.getAcceptableEvents().contains(event);
+        // an event declined by the current state is delegated to its parent
+        // state by internalFire, so canAccept must walk up the same chain
+        for(ImmutableState<T, S, E, C> state=testRawState; state!=null; state=state.getParentState()) {
+            if(state.getAcceptableEvents().contains(event)) {
+                return true;
+            }
+            if(state.getParentState()!=null &&
+                    (state.getParentState().isRegion() || state.getParentState().isParallelState())) {
+                break;
+            }
+        }
+        return false;
     }
-    
+
     protected boolean isIdle() {
         return getStatus()!=StateMachineStatus.BUSY;
     }
