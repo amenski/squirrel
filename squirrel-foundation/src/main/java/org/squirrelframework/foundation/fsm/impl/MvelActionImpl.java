@@ -51,7 +51,7 @@ class MvelActionImpl<T extends StateMachine<T, S, E, C>, S, E, C> implements Act
             variables.put(MvelScriptManager.VAR_STATE_MACHINE, stateMachine);
             scriptManager.eval(mvelExpression, variables, Void.class);
         } catch (RuntimeException e) {
-            logger.error("Evaluate \""+mvelExpression+"\" failed, which caused by "+e.getCause().getMessage());
+            logger.error("Evaluate \""+mvelExpression+"\" failed with "+e.getMessage()+(e.getCause()!=null ? ", which caused by "+e.getCause().getMessage() : ""));
             throw e;
         }
     }
